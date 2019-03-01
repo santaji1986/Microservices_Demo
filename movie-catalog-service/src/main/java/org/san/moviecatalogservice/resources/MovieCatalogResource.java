@@ -10,9 +10,12 @@ import org.san.moviecatalogservice.models.Movie;
 import org.san.moviecatalogservice.models.Rating;
 import org.san.moviecatalogservice.models.UserRating;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -24,6 +27,13 @@ public class MovieCatalogResource {
 	private RestTemplate restTemplate;
 	@Autowired
 	private WebClient.Builder webClientBuilder;
+	@Autowired
+	private DiscoveryClient discoveryClient;
+
+	@RequestMapping("listinstances")
+	public List<ServiceInstance> getAllServices(@RequestParam(name = "serviceId") String serviceId) {
+		return discoveryClient.getInstances(serviceId);
+	}
 
 	@RequestMapping("/{userId}")
 	public List<CatalogItem> getCatalog(@PathVariable("userId") String userId) {
